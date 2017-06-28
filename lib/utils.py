@@ -7,11 +7,13 @@ import errno
 import signal
 from functools import wraps
 from random import randint
+from multiprocessing import cpu_count
 
 from leviathan_config import BASE_DIR, GOOGLE_API_KEY, GOOGLE_CSE_ID, CENSYS_API_URL
 from leviathan_config import CENSYS_UID, CENSYS_SECRET, SHODAN_API_KEY
 
 
+MAX_JOBS = cpu_count()
 HTTP_PORTS = [80, 8080, 1080, 8090, 8000, 8888]
 
 
@@ -237,4 +239,11 @@ def file_len(fname):
     except:
         return 0    
 
- 
+
+def wait_for_jobs(jobs, max_jobs=MAX_JOBS): 
+    if len(jobs) == max_jobs:
+        while True:
+            if any([True if not i.is_alive() else False for i in jobs]):
+                return [j for j in jobs if j.is_alive()]
+    else:
+        return jobs

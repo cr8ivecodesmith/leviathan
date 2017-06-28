@@ -1,10 +1,12 @@
 import os
 import sys
+from multiprocessing import Process
 from time import sleep
 from subprocess import check_output
 import glob
 from leviathan_config import BASE_DIR
-from utils import get_possible_protocols_files, select_protocol, get_protocol_info, get_command, printProgressBar, timeout
+from utils import (get_possible_protocols_files, select_protocol, get_protocol_info, get_command,
+                   printProgressBar, timeout, wait_for_jobs,)
 
 
 def brute_force(discovery_id):
@@ -24,6 +26,7 @@ def brute_force(discovery_id):
         msg = "There is no asset with this Discovery ID: %s" % discovery_id
         return msg
 
+    jobs = []
     port, user_list, pass_list = get_protocol_info(protocol)
     if port and user_list and pass_list:
         user_fullpath = os.path.join(BASE_DIR, 'config', 'wordlists', user_list)
@@ -34,7 +37,11 @@ def brute_force(discovery_id):
             iplist = ipfile.readlines()
             for ipaddress in iplist:
                 try:
-                    brute_force_by_ip(ipaddress, user_fullpath, pass_fullpath, ip_fullpath, protocol, port)
+                    args = (ipaddress, user_fullpath, pass_fullpath, ip_fullpath, protocol, port,)
+                    proc = Process(target=brute_force_by_ip, args=args)
+                    proc.start()
+                    jobs.append(proc)
+                    jobs = wait_for_jobs(jobs)
                 except KeyboardInterrupt:
                     break
                 except:
