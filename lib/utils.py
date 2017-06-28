@@ -12,6 +12,9 @@ from leviathan_config import BASE_DIR, GOOGLE_API_KEY, GOOGLE_CSE_ID, CENSYS_API
 from leviathan_config import CENSYS_UID, CENSYS_SECRET, SHODAN_API_KEY
 
 
+HTTP_PORTS = [80, 8080, 1080, 8090, 8000, 8888]
+
+
 class TimeoutError(Exception):
     pass
 
@@ -42,10 +45,12 @@ def id_generator():
 
 
 def get_protocol_by_service(protocol, service):
+    http_ports = '-p{}'.format(','.join(str(i) for i in HTTP_PORTS))
     return {
         'censys': {'ftp': '"21/ftp"', 'ssh': '"22/ssh"', 'telnet': '"23/telnet"'}.get(protocol, False),
         'massscan': {'ftp': '-p21', 'ssh': '-p22', 'telnet': '-p23', 'smb': '-p445' , 'rdp': '-p3389',
-                     'mysql': '-p3306'}.get(protocol, False)
+                     'mysql': '-p3306',
+                     'http': http_ports}.get(protocol, False)
     }.get(service,
           {'ftp': '21', 'ssh': '22', 'telnet': '23', 'smb': '445' , 'rdp': '3389',
            'mysql': '3306'}.get(protocol, False))
@@ -63,12 +68,14 @@ def get_output_file_by_scanner(scanner, discovery_id, protocol):
 
 
 def get_protocol_info(protocol):
+    ncrack_http_ports = ','.join('http:{}'.format(i) for i in HTTP_PORTS)
     return {
         'ftp': ('21', 'ftp_default_user.txt', 'generic_pass.txt'),
         'ssh': ('22', 'ssh_default_user.txt', 'generic_pass.txt'),
         'telnet': ('23', 'telnet_default_user.txt', 'telnet_default_pass.txt'),
         'rdp': ('3389', 'rdp_default_user.txt', 'generic_pass.txt'),
         'mysql': ('3306', 'mysql_default_user.txt', 'generic_pass.txt')
+        'http': (ncrack_http_ports, 'http_default_user.txt', 'http_default_pass.txt')
     }.get(protocol, (None, None, None))
 
 
@@ -77,8 +84,7 @@ def get_command(protocol, port, user_fullpath, pass_fullpath, ip):
         'telnet': ['ncrack', '-p', port, '-U', user_fullpath, '-P', pass_fullpath, '--pairwise', ip,
                    '-T5']
     }.get(protocol,
-          ['ncrack', '-p', port, '-U', user_fullpath, '-P', pass_fullpath, ip, '-T5']
-          )
+          ['ncrack', '-p', port, '-U', user_fullpath, '-P', pass_fullpath, ip, '-T5'])
 
 
 def get_protocol(filename):
