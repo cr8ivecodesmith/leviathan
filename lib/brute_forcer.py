@@ -49,8 +49,11 @@ def brute_force(discovery_id):
             else:
                 return "Misformatted asset file %s.txt" % discovery_id
 
+            wait_for_jobs(jobs, force=True)
+
             print ""
             print "Finished"
+
 @timeout(50)
 def brute_force_by_ip(ipaddress, user_fullpath, pass_fullpath, ip_fullpath, protocol, port):
     ipaddress = ipaddress.strip("\n")
