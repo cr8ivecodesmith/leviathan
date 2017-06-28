@@ -58,7 +58,8 @@ bruteforce_all_protocols = {
     '2': 'ssh',
     '3': 'telnet',
     '4': 'rdp',
-    '5': 'mysql'
+    '5': 'mysql',
+    '6': 'http',
 }
 
 menu4_keys = {
@@ -539,6 +540,7 @@ def bruteforce_all_menu():
     3. telnet
     4. rdp
     5. mysql
+    6. http
 
     9. back
     0. exit
