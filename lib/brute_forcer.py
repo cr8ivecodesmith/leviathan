@@ -50,6 +50,7 @@ def brute_force(discovery_id):
                 return "Misformatted asset file %s.txt" % discovery_id
 
             wait_for_jobs(jobs, force=True)
+            sleep(5)
 
             print ""
             print "Finished"
