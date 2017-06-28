@@ -74,8 +74,8 @@ def get_protocol_info(protocol):
         'ssh': ('22', 'ssh_default_user.txt', 'generic_pass.txt'),
         'telnet': ('23', 'telnet_default_user.txt', 'telnet_default_pass.txt'),
         'rdp': ('3389', 'rdp_default_user.txt', 'generic_pass.txt'),
-        'mysql': ('3306', 'mysql_default_user.txt', 'generic_pass.txt')
-        'http': (ncrack_http_ports, 'http_default_user.txt', 'http_default_pass.txt')
+        'mysql': ('3306', 'mysql_default_user.txt', 'generic_pass.txt'),
+        'http': (ncrack_http_ports, 'http_default_user.txt', 'http_default_pass.txt'),
     }.get(protocol, (None, None, None))
 
 
