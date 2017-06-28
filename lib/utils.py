@@ -240,8 +240,8 @@ def file_len(fname):
         return 0    
 
 
-def wait_for_jobs(jobs, max_jobs=MAX_JOBS): 
-    if len(jobs) == max_jobs:
+def wait_for_jobs(jobs, max_jobs=MAX_JOBS, force=False): 
+    if jobs and (force or (len(jobs) == max_jobs)):
         while True:
             if any([True if not i.is_alive() else False for i in jobs]):
                 return [j for j in jobs if j.is_alive()]
